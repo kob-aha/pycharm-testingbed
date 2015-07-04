@@ -1,9 +1,12 @@
 FROM centos:6
 
-RUN yum install -y supervisor openssh-server python-pip \  
-  && mkdir -p /var/run/sshd  \
-  && mkdir -p /var/log/supervisor \
-  && mkdir -p /etc/supervisor/conf.d
+RUN yum install -y supervisor openssh-server python-pip python-setuptools \
+  ; curl https://bootstrap.pypa.io/get-pip.py | python - \
+  ; pip install supervisor-stdout \
+  ; easy_install supervisor \
+  ; mkdir -p /var/run/sshd  \
+  ; mkdir -p /var/log/supervisor \
+  ; mkdir -p /etc/supervisor/conf.d
 
 #COPY ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -18,9 +21,11 @@ RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/ss
 #ENV NOTVISIBLE "in users profile"
 #RUN echo "export VISIBLE=now" >> /etc/profile
 
+ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Expose SSH on 22, but this gets mapped to some other address.
 EXPOSE 22
 
 # Replace old entrypoint with supervisiord, starts both sshd and worker.py
-#ENTRYPOINT ["/usr/bin/supervisord"]
-ENTRYPOINT "/bin/bash"
+ENTRYPOINT ["/usr/bin/supervisord"]
+CMD ["-c", "/etc/supervisor/conf.d/supervisord.conf"]
