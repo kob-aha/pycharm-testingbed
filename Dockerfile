@@ -14,6 +14,7 @@ RUN yum install -y supervisor openssh-server python-pip python-setuptools \
 RUN groupadd docker
 RUN useradd -d/home/docker -gdocker -m docker
 RUN echo 'docker:tcuser' | chpasswd
+RUN echo 'root:tcuser' | chpasswd
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # SSH login fix. Otherwise user is kicked off after login
@@ -25,6 +26,11 @@ ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Expose SSH on 22, but this gets mapped to some other address.
 EXPOSE 22
+
+# Replace ssh key files
+ADD ssh/ /etc/ssh/
+RUN chmod 600 /etc/ssh/ssh_host*key
+RUN chmod 644 /etc/ssh/ssh_host*.pub
 
 # Replace old entrypoint with supervisiord, starts both sshd and worker.py
 ENTRYPOINT ["/usr/bin/supervisord"]

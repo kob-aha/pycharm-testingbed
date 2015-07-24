@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
       d.build_args = ["-t=pycharm-test"]
       d.ports = ["33:22"]
       d.name = "pycharm-test2"
-      d.remains_running = true
+      d.remains_running = false
       #d.has_ssh = true
       #d.cmd = ["vertx", "run", "vertx-examples/src/raw/java/httphelloworld/HelloWorldServer.java"]
       d.volumes = ["/vagrant/:/home/docker/pycharm-test"]
