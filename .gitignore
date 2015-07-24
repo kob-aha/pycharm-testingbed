@@ -1,3 +1,7 @@
 .vagrant/
 .idea/
+.idea.pycharm
 .pycharm_helpers
+
+*.iml
+*.swp
